@@ -1,0 +1,5 @@
+{
+  "name": "Chromatic AI Studio",
+  "description": "A professional-grade color manipulation tool featuring smart palette generation powered by Google Gemini 2.5 Flash, accessibility analysis, and data visualization.",
+  "requestFramePermissions": []
+}

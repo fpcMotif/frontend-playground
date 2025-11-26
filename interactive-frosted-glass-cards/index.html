@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Interactive Frosted Glass Cards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+</head>
+
+<body class="bg-black antialiased">
+  <app-root></app-root>
+  <svg class="absolute w-0 h-0">
+    <filter id="blur">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="20" />
+    </filter>
+  </svg>
+</body>
+
+</html>

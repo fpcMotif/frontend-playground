@@ -1,0 +1,12 @@
+---
+description: Enforce using bun and bunx instead of bun/bunx/yarn/pbun
+globs:
+---
+
+# Package Manager Rules
+
+- **ALWAYS** use `bun` instead of `bun`, `yarn`, or `pbun`.
+- **ALWAYS** use `bunx` instead of `bunx`.
+- When you see instructions to run `bun install`, run `bun install`.
+- When you see instructions to run `bunx <command>`, run `bunx <command>`.
+- The project is configured as a Bun workspace.

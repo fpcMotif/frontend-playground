@@ -1,0 +1,70 @@
+{
+	"$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+	"version": 1,
+	"newProjectRoot": "",
+	"projects": {
+		"app": {
+			"projectType": "application",
+			"root": "",
+			"sourceRoot": "./",
+			"prefix": "app",
+			"architect": {
+				"build": {
+					"builder": "@angular/build:application",
+					"options": {
+						"outputPath": {
+							"base": "./dist",
+							"browser": "."
+						},
+						"browser": "index.tsx",
+						"tsConfig": "tsconfig.json",
+						"assets": [
+							{
+								"glob": "**/*",
+								"input": "public",
+								"output": "/"
+							}
+						],
+						"styles": ["src/styles.css"]
+					},
+					"configurations": {
+						"production": {
+							"outputHashing": "all"
+						},
+						"development": {
+							"optimization": false,
+							"extractLicenses": false,
+							"sourceMap": true
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"serve": {
+					"builder": "@angular/build:dev-server",
+					"options": {
+						"port": 3000
+					},
+					"configurations": {
+						"production": {
+							"buildTarget": "app:build:production"
+						},
+						"development": {
+							"buildTarget": "app:build:development"
+						}
+					},
+					"defaultConfiguration": "development"
+				},
+				"lint": {
+					"builder": "@angular-eslint/builder:lint",
+					"options": {
+						"lintFilePatterns": [".//**/*.ts", ".//**/*.html"]
+					}
+				}
+			}
+		}
+	},
+	"cli": {
+		"analytics": "8176bbe4-db7b-4e48-a74c-32eda4dcfc61",
+		"schematicCollections": ["angular-eslint"]
+	}
+}
