@@ -1,6 +1,5 @@
-/* Set default values for the card effects */
+/* Set default values for the card effects, inspired by the original JS config */
 :host {
-  display: block;
   --icon-saturate: 5;
   --icon-brightness: 1.3;
   --icon-contrast: 1.4;
@@ -14,89 +13,20 @@
   --border-contrast: 2.5;
 }
 
-/* Theme toggle button */
-.theme-toggle {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 50;
-  padding: 0.5rem;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.theme-toggle:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.theme-toggle svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-/* Main container */
-.main-container {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Header section */
-.header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.title {
-  font-size: 2.25rem;
-  font-weight: 700;
-  background: linear-gradient(to right, #c084fc, #db2777);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-@media (min-width: 640px) {
-  .title {
-    font-size: 3rem;
-  }
-}
-
-.subtitle {
-  color: #a3a3a3;
-  margin-top: 0.5rem;
-}
-
-/* Cards grid */
-.cards-grid {
-  width: 100%;
-  max-width: 64rem;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 2rem;
-  place-items: center;
-}
-
-@media (min-width: 640px) {
-  .cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .cards-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+/* Background grid pattern from original CSS */
+body::before {
+    --size: 45px;
+    --line: hsla(0, 0%, 100%, 0.07);
+    content: '';
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    background: 
+      linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size),
+      linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size);
+    mask: linear-gradient(-20deg, transparent 50%, white);
+    top: 0;
+    transform-style: flat;
+    pointer-events: none;
+    z-index: -1;
 }

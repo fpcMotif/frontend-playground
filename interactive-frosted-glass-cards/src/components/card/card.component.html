@@ -1,30 +1,50 @@
-<article class="card" [class.loading]="!isLoaded()" [style.transform]="transformStyle()"
-  [style.transition-delay]="transitionDelay()" [style.grid-area]="!isLoaded() ? '1 / 1' : null"
-  [style.justify-self]="!isLoaded() ? 'center' : null" [style.align-self]="!isLoaded() ? 'center' : null"
-  [style.z-index]="zIndex()">
+<article
+  class="w-[280px] aspect-[4/3] relative rounded-xl cursor-pointer
+         bg-neutral-900/50 outline outline-2 outline-neutral-800
+         transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]
+         active:translate-y-px active:scale-[0.98] select-none"
+  [class.opacity-0]="!isLoaded()"
+  [style.transform]="transformStyle()"
+  [style.transition-delay]="transitionDelay()"
+  [style.grid-area]="!isLoaded() ? '1 / 1' : null"
+  [style.justify-self]="!isLoaded() ? 'center' : null"
+  [style.align-self]="!isLoaded() ? 'center' : null"
+  [style.z-index]="zIndex()"
+>
   <!-- Card Content Container -->
-  <div class="card-content">
-
+  <div class="absolute inset-0 grid place-items-center gap-2 overflow-hidden rounded-xl">
+    
     <!-- Background blurred icon -->
-    <div class="icon-background">
-      <img [src]="imageUrl()" [alt]="title()" />
+    <div 
+      class="icon-background absolute inset-0 grid place-items-center will-change-[transform,filter]"
+      [style.filter]="'url(#blur) saturate(var(--icon-saturate)) brightness(var(--icon-brightness)) contrast(var(--icon-contrast))'"
+      [style.opacity]="'var(--icon-opacity)'"
+      [style.scale]="'var(--icon-scale)'"
+    >
+      <img [src]="imageUrl()" [alt]="title()" class="w-[100px]" />
     </div>
 
     <!-- Foreground Icon -->
-    <img [src]="imageUrl()" [alt]="title()" class="icon-foreground" />
+    <img [src]="imageUrl()" [alt]="title()" class="w-[100px] relative z-10" />
 
     <!-- Title -->
-    <h2 class="card-title">{{ title() }}</h2>
+    <h2 class="relative z-20 font-semibold text-base text-neutral-100">{{ title() }}</h2>
 
     <!-- Options Button -->
-    <button aria-label="More options" class="options-button">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path
-          d="M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z" />
+    <button aria-label="More options" class="absolute top-2 right-2 z-20 grid place-items-center w-8 h-8 rounded-lg bg-transparent text-neutral-400 opacity-40 hover:opacity-100 hover:bg-black/20 focus-visible:opacity-100 focus-visible:bg-black/20 transition-opacity">
+      <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z" />
       </svg>
     </button>
   </div>
 
   <!-- Frosted Glass Border Effect -->
-  <div class="frosted-border"></div>
+  <div
+    class="pointer-events-none absolute inset-0 rounded-xl"
+    [style.border]="'var(--border-width) solid transparent'"
+    [style.backdrop-filter]="'blur(var(--border-blur)) saturate(var(--border-saturate)) brightness(var(--border-brightness)) contrast(var(--border-contrast))'"
+    [style.mask]="'linear-gradient(white 0 0) content-box, linear-gradient(white 0 0)'"
+    [style.-webkit-mask-composite]="'xor'"
+    [style.mask-composite]="'exclude'"
+  ></div>
 </article>
