@@ -1,33 +1,44 @@
 {
-	"name": "interactive-frosted-glass-cards",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
-	"scripts": {
-		"dev": "ng serve",
-		"build": "ng build",
-		"preview": "ng serve --configuration=production",
-		"lint": "ng lint"
-	},
-	"dependencies": {
-		"@angular/build": "^21.0.0",
-		"@angular/cli": "^21.0.0",
-		"@angular/common": "^21.0.0",
-		"@angular/compiler": "^21.0.0",
-		"@angular/compiler-cli": "^21.0.0",
-		"@angular/core": "^21.0.0",
-		"@angular/platform-browser": "^21.0.0",
-		"rxjs": "^7.8.2",
-		"ultracite": "^6.3.6"
-	},
-	"devDependencies": {
-		"@angular-eslint/builder": "21.0.1",
-		"@eslint/js": "^9.39.1",
-		"@types/node": "^22.14.0",
-		"angular-eslint": "21.0.1",
-		"eslint": "^9.39.1",
-		"typescript": "~5.7.2",
-		"typescript-eslint": "8.46.4",
-		"vite": "^7.2.4"
-	}
+  "name": "interactive-frosted-glass-cards-ts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 3000",
+    "build": "vite build",
+    "serve": "vite preview",
+    "test": "vitest run",
+    "format": "biome format",
+    "lint": "biome lint",
+    "check": "biome check"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.0.6",
+    "@tanstack/react-devtools": "^0.7.0",
+    "@tanstack/react-router": "^1.132.0",
+    "@tanstack/react-router-devtools": "^1.132.0",
+    "@tanstack/react-router-ssr-query": "^1.131.7",
+    "@tanstack/react-start": "^1.132.0",
+    "@tanstack/router-plugin": "^1.132.0",
+    "lucide-react": "^0.544.0",
+    "nitro": "latest",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.0.6",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.4",
+    "@tanstack/devtools-vite": "^0.3.11",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.2.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "jsdom": "^27.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^7.1.7",
+    "vitest": "^3.0.5",
+    "web-vitals": "^5.1.0"
+  }
 }

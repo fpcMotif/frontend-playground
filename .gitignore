@@ -12,6 +12,8 @@ build/
 .next/
 .angular/
 .svelte-kit/
+.output/
+.tanstack/
 out/
 
 # Environment
