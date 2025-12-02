@@ -1,0 +1,404 @@
+/**
+ * Add to Cart Button Styles
+ * Tailwind CSS v4 with CSS-first configuration
+ */
+
+/* ============================================
+   Tailwind CSS v4 Import & Theme Configuration
+   ============================================ */
+@import "tailwindcss";
+
+@theme {
+  /* Custom Colors */
+  --color-success: oklch(0.72 0.19 142.5);
+  --color-success-light: oklch(0.85 0.15 142.5);
+  
+  /* Border Colors */
+  --color-border-base: color-mix(in hsl, currentColor, transparent 90%);
+  --color-border-hover: color-mix(in hsl, currentColor, transparent 80%);
+  
+  /* Transition Timing Functions */
+  --ease-button: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Animation Durations */
+  --duration-fast: 0.16s;
+  --duration-normal: 0.22s;
+  --duration-slow: 0.5s;
+  
+  /* Custom Spacing */
+  --spacing-button-x: 0.875rem;
+  --spacing-button-y: 0.5rem;
+  
+  /* Font Settings */
+  --font-sans: 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif, system-ui;
+  --font-size-button: 0.875rem;
+  --font-weight-light: 300;
+}
+
+/* ============================================
+   CSS Custom Properties for Animation State
+   ============================================ */
+@property --complete {
+  initial-value: 0;
+  inherits: true;
+  syntax: '<number>';
+}
+
+/* ============================================
+   Base & Reset Styles
+   ============================================ */
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  [data-theme='light'] {
+    color-scheme: light only;
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark only;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: light-dark(#fff, #000);
+  }
+}
+
+/* ============================================
+   Add to Cart Button Component Styles
+   ============================================ */
+@layer components {
+  /* Main Button */
+  .atc-button {
+    --scale: 1.5;
+    
+    position: relative;
+    padding: 0;
+    border: 0;
+    border: 2px solid var(--color-border-base);
+    border-radius: 100px;
+    background: light-dark(#fff, #000);
+    color: color-mix(in hsl, canvasText, canvas 10%);
+    font-size: var(--font-size-button);
+    font-weight: var(--font-weight-light);
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition-property: transform;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-button);
+    
+    &:focus-visible {
+      outline: 2px solid var(--color-success);
+      outline-offset: 2px;
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  /* Content Wrapper */
+  .atc-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: var(--spacing-button-y) var(--spacing-button-x);
+    padding-right: 1rem;
+    overflow: hidden;
+    border-radius: inherit;
+    
+    /* Background overlay for reveal effect */
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      background: light-dark(#fff, #000);
+      opacity: 1;
+      transition: opacity 0.26s ease-out;
+    }
+  }
+
+  /* Cart Icon Container */
+  .atc-cart {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    transform-origin: 0 100%;
+  }
+
+  /* Dummy Cart (positioning reference) */
+  .atc-cart-dummy {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    opacity: 0;
+    translate: -50% -50%;
+  }
+
+  /* Checkmark Icon */
+  .atc-check {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    opacity: 0;
+    translate: -50% -50%;
+  }
+
+  /* Icon Base Styles */
+  .atc-icon {
+    width: 100%;
+    height: 100%;
+    overflow: visible !important;
+  }
+
+  /* Cart Item (green rectangle) */
+  .cart-item {
+    fill: var(--color-success);
+  }
+
+  /* Button Text */
+  .atc-text {
+    font-size: var(--font-size-button);
+  }
+
+  /* ----------------------------------------
+     Border Layers
+     ---------------------------------------- */
+  .atc-border {
+    position: absolute;
+    inset: -2px;
+    border: 2px solid transparent;
+    border-radius: inherit;
+    container-type: inline-size;
+    pointer-events: none;
+  }
+
+  /* Animated Rainbow Border */
+  .atc-border--animated {
+    mask: 
+      linear-gradient(#fff 0 0) padding-box, 
+      linear-gradient(#fff 0 0) border-box;
+    mask-composite: exclude;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: -1;
+      width: calc(100cqi + 4px);
+      height: calc(100cqi + 4px);
+      translate: -50% -50%;
+      background: conic-gradient(
+        from calc(var(--complete, 0) * 180deg) in hsl increasing hue,
+        transparent 0 calc((1 - var(--complete)) * 20%),
+        hsl(0 100% 65%) calc((1 - var(--complete)) * 30%),
+        hsl(339 100% 65%) calc(100% - ((1 - var(--complete)) * 30%)),
+        transparent calc(100% - ((1 - var(--complete)) * 20%)) 100%
+      );
+      animation: spin 2s infinite linear;
+      transition: --complete 0.22s ease-out;
+    }
+  }
+
+  /* Static Border (neutral) */
+  .atc-border--static {
+    border-color: canvasText;
+    opacity: 0;
+  }
+
+  /* Complete Border (success state) */
+  .atc-border--complete {
+    border-color: var(--color-success);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   Keyframe Animations
+   ============================================ */
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* ============================================
+   Reveal State Transitions
+   ============================================ */
+@layer components {
+  [data-reveal='true'] .atc-content::before {
+    opacity: 0.75;
+  }
+
+  [data-complete='true'] .atc-border--animated::after {
+    --complete: 1;
+  }
+}
+
+/* ============================================
+   Demo Page Styles (Optional)
+   ============================================ */
+@layer components {
+  .demo-container {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+  }
+
+  .demo-button-wrapper {
+    scale: var(--scale, 1.5);
+  }
+
+  /* Grid Background Pattern */
+  .demo-grid-bg {
+    --grid-size: 45px;
+    --grid-line: color-mix(in hsl, canvasText, transparent 80%);
+    
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px var(--grid-size))
+        calc(var(--grid-size) * 0.36) 50% / var(--grid-size) var(--grid-size),
+      linear-gradient(var(--grid-line) 1px, transparent 1px var(--grid-size))
+        0% calc(var(--grid-size) * 0.32) / var(--grid-size) var(--grid-size);
+    mask: linear-gradient(-20deg, transparent 50%, white);
+  }
+}
+
+/* ============================================
+   Control Panel Styles
+   ============================================ */
+@layer components {
+  .controls-panel {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: 240px;
+    padding: 1rem;
+    background: color-mix(in hsl, canvasText, canvas 95%);
+    border: 1px solid color-mix(in hsl, canvasText, transparent 85%);
+    border-radius: 8px;
+    font-size: 0.75rem;
+  }
+
+  .controls-title {
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid color-mix(in hsl, canvasText, transparent 85%);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+  }
+
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .control-label {
+    flex: 0 0 60px;
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .control-slider {
+    flex: 1;
+    height: 4px;
+    appearance: none;
+    background: color-mix(in hsl, canvasText, transparent 80%);
+    border-radius: 2px;
+    cursor: pointer;
+    
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      background: canvasText;
+      border-radius: 50%;
+      cursor: grab;
+    }
+    
+    &::-webkit-slider-thumb:active {
+      cursor: grabbing;
+    }
+  }
+
+  .control-select {
+    flex: 1;
+    padding: 0.375rem 0.5rem;
+    background: color-mix(in hsl, canvasText, canvas 90%);
+    border: 1px solid color-mix(in hsl, canvasText, transparent 80%);
+    border-radius: 4px;
+    color: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    
+    &:focus {
+      outline: 1px solid var(--color-success);
+      outline-offset: 1px;
+    }
+  }
+
+  .control-value {
+    flex: 0 0 32px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cart-count {
+    padding: 0.25rem 0.5rem;
+    background: var(--color-success);
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+  }
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+@layer utilities {
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
