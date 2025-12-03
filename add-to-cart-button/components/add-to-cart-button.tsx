@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useRef, useCallback, useEffect, useState, forwardRef } from "react"
+import { useRef, useCallback, useEffect, useReducer, forwardRef } from "react"
 import gsap from "gsap"
 import { cn } from "@/lib/utils"
 
@@ -58,7 +58,7 @@ function CheckIcon({ className }: { className?: string }) {
 // Animation Hook
 // ============================================================================
 
-interface AnimationRefs {
+type AnimationRefs = {
   cartRef: React.RefObject<HTMLSpanElement | null>
   itemRef: React.RefObject<SVGRectElement | null>
   textRef: React.RefObject<HTMLSpanElement | null>
@@ -69,7 +69,23 @@ interface AnimationRefs {
   dummyRef: React.RefObject<HTMLSpanElement | null>
 }
 
+export type ButtonState = "idle" | "adding"
+
+type Action = { type: "START" } | { type: "FINISH" }
+
+function buttonReducer(state: ButtonState, action: Action): ButtonState {
+  switch (action.type) {
+    case "START":
+      return "adding"
+    case "FINISH":
+      return "idle"
+    default:
+      return state
+  }
+}
+
 function useAddToCartAnimation(itemRef: React.RefObject<SVGRectElement | null>) {
+  const [buttonState, dispatch] = useReducer(buttonReducer, "idle")
   const isRunning = useRef(false)
 
   const cartRef = useRef<HTMLSpanElement>(null)
@@ -97,6 +113,7 @@ function useAddToCartAnimation(itemRef: React.RefObject<SVGRectElement | null>) 
       if (!cartRef.current || !dummyRef.current) return
 
       isRunning.current = true
+      dispatch({ type: "START" })
 
       const dummyRect = dummyRef.current.getBoundingClientRect()
       const cartRect = cartRef.current.getBoundingClientRect()
@@ -107,6 +124,7 @@ function useAddToCartAnimation(itemRef: React.RefObject<SVGRectElement | null>) 
           defaults: { duration: 0.5, ease: "power2.out" },
           onComplete: () => {
             isRunning.current = false
+            dispatch({ type: "FINISH" })
             onComplete?.()
           },
         })
@@ -231,14 +249,14 @@ function useAddToCartAnimation(itemRef: React.RefObject<SVGRectElement | null>) 
     [itemRef],
   )
 
-  return { refs, animate, isRunning }
+  return { refs, animate, buttonState }
 }
 
 // ============================================================================
 // Main Component
 // ============================================================================
 
-export interface AddToCartButtonProps {
+export type AddToCartButtonProps = {
   /** Text displayed on the button */
   text?: string
   /** Callback fired when animation completes */
@@ -252,8 +270,7 @@ export interface AddToCartButtonProps {
 export const AddToCartButton = forwardRef<HTMLButtonElement, AddToCartButtonProps>(
   ({ text = "Add to cart", onAddComplete, className, disabled = false }, ref) => {
     const itemRef = useRef<SVGRectElement>(null)
-    const { refs, animate, isRunning } = useAddToCartAnimation(itemRef)
-    const [isAdding, setIsAdding] = useState(false)
+    const { refs, animate, buttonState } = useAddToCartAnimation(itemRef)
 
     // Initialize item position
     useEffect(() => {
@@ -263,11 +280,9 @@ export const AddToCartButton = forwardRef<HTMLButtonElement, AddToCartButtonProp
     }, [])
 
     const handleClick = async () => {
-      if (isRunning.current || disabled) return
+      if (buttonState === "adding" || disabled) return
 
-      setIsAdding(true)
       await animate(() => {
-        setIsAdding(false)
         onAddComplete?.()
       })
     }
@@ -277,9 +292,9 @@ export const AddToCartButton = forwardRef<HTMLButtonElement, AddToCartButtonProp
         ref={ref}
         type="button"
         aria-label={text}
-        disabled={disabled || isAdding}
+        disabled={disabled || buttonState === "adding"}
         onClick={handleClick}
-        data-adding={isAdding}
+        data-adding={buttonState === "adding"}
         className={cn(
           "atc-button group relative cursor-pointer select-none",
           "rounded-full border-2 border-border bg-background",
