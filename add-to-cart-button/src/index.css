@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -119,6 +118,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -127,11 +127,11 @@
 /* Add to Cart Button - Custom CSS for animated gradient border */
 @layer components {
   .atc-button {
-    @apply relative cursor-pointer select-none rounded-full border-2 border-border bg-background font-light text-foreground/90 text-sm transition-[translate,scale] duration-150 ease-out active:translate-y-px active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50;
+    @apply relative cursor-pointer rounded-full border-2 border-border bg-background text-sm font-light text-foreground/90 transition-transform duration-150 ease-out select-none active:translate-y-px active:scale-[0.99] disabled:pointer-events-none disabled:opacity-50;
   }
 
   .atc-content {
-    @apply relative z-10 flex items-center gap-1.5 overflow-hidden rounded-[inherit] px-3.5 py-2 pr-4;
+    @apply relative z-10 flex items-center justify-center overflow-hidden rounded-[inherit] py-2.5 px-12;
   }
 
   .atc-cart {
@@ -144,12 +144,23 @@
     left: 9px;
   }
 
+  .atc-count {
+    @apply absolute -top-2 -right-2 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white opacity-0 transition-opacity duration-300;
+    animation: atc-fade-in 0.2s ease-out forwards;
+  }
+
+  @keyframes atc-fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+
   .atc-dummy {
-    @apply -translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 inline-block size-[18px] opacity-0;
+    @apply absolute top-1/2 left-1/2 inline-block size-[18px] -translate-x-1/2 -translate-y-1/2 opacity-0;
   }
 
   .atc-check {
-    @apply -translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 inline-block size-[18px] opacity-0;
+    @apply absolute top-1/2 left-1/2 inline-block size-[18px] -translate-x-1/2 -translate-y-1/2 opacity-0;
   }
 
   .atc-icon {
@@ -157,11 +168,11 @@
   }
 
   .atc-icon--check {
-    @apply stroke-[3] stroke-emerald-500;
+    @apply stroke-emerald-500 stroke-[3];
   }
 
-  .atc-text {
-    @apply text-sm;
+  .atc-tooltip {
+    @apply pointer-events-none absolute top-full left-1/2 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-foreground opacity-0 shadow-lg ring-1 ring-border/10 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1;
   }
 
   .atc-border {

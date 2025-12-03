@@ -1,0 +1,25 @@
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Dependencies
+node_modules/
+
+# Lock files
+bun.lock
+package-lock.json
+yarn.lock
+
+# Config files that don't need formatting
+*.config.js
+*.config.ts
+*.config.mjs
+
+# Temporary files
+*.tmp
+*.temp
+
+# Logs
+*.log
