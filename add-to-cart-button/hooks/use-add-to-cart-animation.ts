@@ -1,235 +1,260 @@
-import { useRef, useCallback, useReducer, useEffect } from "react"
-import gsap from "gsap"
+import { Effect } from "effect";
+import {
+  useAnimate
+} from "framer-motion";
+import { useCallback, useReducer, useRef } from "react";
 
-export type AnimationRefs = {
-    cartRef: React.RefObject<HTMLSpanElement | null>
-    itemRef: React.RefObject<HTMLSpanElement | null>
-    textRef: React.RefObject<HTMLSpanElement | null>
-    checkRef: React.RefObject<HTMLSpanElement | null>
-    staticBorderRef: React.RefObject<HTMLSpanElement | null>
-    completeBorderRef: React.RefObject<HTMLSpanElement | null>
-    animatedBorderRef: React.RefObject<HTMLSpanElement | null>
-    dummyRef: React.RefObject<HTMLSpanElement | null>
-}
+export type ButtonState = "idle" | "adding";
 
-export type ButtonState = "idle" | "adding"
-
-type Action = { type: "START" } | { type: "FINISH" }
+type Action = { type: "START" } | { type: "FINISH" };
 
 const ANIMATION_CONFIG = {
-    duration: {
-        base: 0.5,
-        fast: 0.1,
-        normal: 0.22,
-        slow: 0.6,
-        check: 0.25,
-        reset: 1,
-        wiggle: 0.11,
-    },
-    rotation: {
-        wiggle: -20,
-        move: -30,
-    },
-    scale: {
-        check: 1.5,
-    },
-    delay: {
-        drop: 0.1,
-        fade: 0.125,
-    },
-    blur: 6,
-} as const
+  duration: {
+    base: 0.5,
+    fast: 0.1,
+    normal: 0.22,
+    slow: 0.6,
+    check: 0.25,
+    reset: 1,
+    wiggle: 0.11,
+  },
+  rotation: {
+    wiggle: -20,
+    move: -30,
+  },
+  scale: {
+    check: 1.5,
+  },
+  delay: {
+    drop: 0.1,
+    fade: 0.125,
+  },
+  blur: 6,
+} as const;
 
 function buttonReducer(state: ButtonState, action: Action): ButtonState {
-    switch (action.type) {
-        case "START":
-            return "adding"
-        case "FINISH":
-            return "idle"
-        default:
-            return state
-    }
+  switch (action.type) {
+    case "START":
+      return "adding";
+    case "FINISH":
+      return "idle";
+    default:
+      return state;
+  }
 }
 
-export function useAddToCartAnimation(itemRef: React.RefObject<HTMLSpanElement | null>) {
-    const [buttonState, dispatch] = useReducer(buttonReducer, "idle")
-    const isRunning = useRef(false)
-    const timeline = useRef<gsap.core.Timeline | null>(null)
+// Helper to wrap framer-motion animate in an Effect
+const animateFx = (
+  animate: AnimateFunction,
+  selector: string,
+  keyframes: Keyframes,
+  options?: AnimationOptions
+) => Effect.tryPromise(() => animate(selector, keyframes, options));
 
-    const cartRef = useRef<HTMLSpanElement>(null)
-    const textRef = useRef<HTMLSpanElement>(null)
-    const checkRef = useRef<HTMLSpanElement>(null)
-    const staticBorderRef = useRef<HTMLSpanElement>(null)
-    const completeBorderRef = useRef<HTMLSpanElement>(null)
-    const animatedBorderRef = useRef<HTMLSpanElement>(null)
-    const dummyRef = useRef<HTMLSpanElement>(null)
+export function useAddToCartAnimation() {
+  const [buttonState, dispatch] = useReducer(buttonReducer, "idle");
+  const [scope, animate] = useAnimate();
+  const isRunning = useRef(false);
 
-    const refs: AnimationRefs = {
-        cartRef,
-        itemRef,
-        textRef,
-        checkRef,
-        staticBorderRef,
-        completeBorderRef,
-        animatedBorderRef,
-        dummyRef,
-    }
+  const runAnimation = useCallback(
+    (
+      currentScope: React.RefObject<HTMLElement | null>,
+      currentAnimate: AnimateFunction
+    ) =>
+      Effect.gen(function* (_) {
+        // Initial setup
+        yield* _(
+          animateFx(currentAnimate, ".atc-item", { y: -24 }, { duration: 0 })
+        );
 
-    // Cleanup GSAP timeline on unmount
-    useEffect(() => {
-        return () => {
-            timeline.current?.kill()
+        const dummy = currentScope.current?.querySelector(".atc-dummy");
+        const cart = currentScope.current?.querySelector(".atc-cart");
+
+        if (!(dummy && cart)) {
+          return;
         }
-    }, [])
 
-    // Initialize item position
-    useEffect(() => {
-        if (itemRef.current) {
-            gsap.set(itemRef.current, { y: -24 })
-        }
-    }, [itemRef])
+        const dummyRect = dummy.getBoundingClientRect();
+        const cartRect = cart.getBoundingClientRect();
+        const distanceX = dummyRect.left - cartRect.left;
 
-    const animate = useCallback(
-        async (onComplete?: () => void) => {
-            if (isRunning.current) return
-            if (!cartRef.current || !dummyRef.current) return
+        // Animation sequence
+        yield* _(
+          Effect.all(
+            [
+              // Move cart to center
+              animateFx(
+                animate,
+                ".atc-cart",
+                { x: distanceX },
+                { duration: ANIMATION_CONFIG.duration.normal, ease: "easeOut" }
+              ),
+              // Wiggle cart
+              animateFx(
+                animate,
+                ".atc-cart",
+                { rotate: [0, ANIMATION_CONFIG.rotation.wiggle, 0] },
+                {
+                  duration: ANIMATION_CONFIG.duration.wiggle * 2,
+                  ease: "easeInOut",
+                }
+              ),
+              // Fade out text
+              animateFx(
+                animate,
+                ".atc-text",
+                {
+                  opacity: 0,
+                  x: distanceX,
+                  filter: `blur(${ANIMATION_CONFIG.blur}px)`,
+                },
+                { duration: ANIMATION_CONFIG.duration.normal, ease: "easeOut" }
+              ),
+              // Drop item into cart
+              animateFx(
+                animate,
+                ".atc-item",
+                { y: 0 },
+                {
+                  duration: ANIMATION_CONFIG.duration.fast,
+                  delay: ANIMATION_CONFIG.delay.drop,
+                }
+              ),
+              // Show static border
+              animateFx(
+                animate,
+                ".atc-border--static",
+                { opacity: 1 },
+                {
+                  duration: ANIMATION_CONFIG.duration.fast,
+                  delay: ANIMATION_CONFIG.delay.drop,
+                }
+              ),
+              // Hide animated border
+              animateFx(
+                animate,
+                ".atc-border--animated",
+                { opacity: 0 },
+                { duration: 0, delay: ANIMATION_CONFIG.delay.drop }
+              ),
+            ],
+            { concurrency: "unbounded" }
+          )
+        );
 
-            isRunning.current = true
-            dispatch({ type: "START" })
+        // Move cart off screen
+        yield* _(
+          Effect.all(
+            [
+              animateFx(
+                animate,
+                ".atc-cart",
+                { x: distanceX * 4, rotate: ANIMATION_CONFIG.rotation.move },
+                { duration: ANIMATION_CONFIG.duration.slow, ease: "easeIn" }
+              ),
+              // Show complete border
+              animateFx(
+                animate,
+                ".atc-border--complete",
+                { opacity: 1 },
+                { duration: ANIMATION_CONFIG.duration.normal }
+              ),
+              // Show check icon
+              animateFx(
+                animate,
+                ".atc-check",
+                { opacity: 1, scale: [0, ANIMATION_CONFIG.scale.check, 1] },
+                { duration: ANIMATION_CONFIG.duration.check }
+              ),
+            ],
+            { concurrency: "unbounded" }
+          )
+        );
 
-            const dummyRect = dummyRef.current.getBoundingClientRect()
-            const cartRect = cartRef.current.getBoundingClientRect()
-            const distanceX = dummyRect.left - cartRect.left
+        // Reset positions (fade out borders, fade in text)
+        yield* _(
+          Effect.all(
+            [
+              animateFx(
+                animate,
+                ".atc-border--static, .atc-border--complete",
+                { opacity: 0 },
+                {
+                  duration: ANIMATION_CONFIG.duration.base,
+                  delay: ANIMATION_CONFIG.delay.fade,
+                }
+              ),
+              animateFx(
+                animate,
+                ".atc-text",
+                { x: 0, opacity: 1, filter: "blur(0px)" },
+                {
+                  duration: ANIMATION_CONFIG.duration.normal,
+                  delay: ANIMATION_CONFIG.delay.fade,
+                }
+              ),
+              animateFx(
+                animate,
+                ".atc-check",
+                { opacity: 0 },
+                {
+                  duration: ANIMATION_CONFIG.duration.fast,
+                  delay: ANIMATION_CONFIG.delay.fade,
+                }
+              ),
+              animateFx(
+                animate,
+                ".atc-cart",
+                { x: -100, rotate: 0 },
+                { duration: 0 }
+              ),
+              animateFx(animate, ".atc-item", { y: -24 }, { duration: 0 }),
+            ],
+            { concurrency: "unbounded" }
+          )
+        );
 
-            timeline.current = gsap
-                .timeline({
-                    defaults: { duration: ANIMATION_CONFIG.duration.base, ease: "power2.out" },
-                    onComplete: () => {
-                        isRunning.current = false
-                        dispatch({ type: "FINISH" })
-                        onComplete?.()
-                    },
-                })
-                // Move cart to center
-                .to(cartRef.current, {
-                    x: distanceX,
-                    duration: ANIMATION_CONFIG.duration.normal,
-                })
-                // Wiggle cart
-                .to(
-                    cartRef.current,
-                    {
-                        rotate: ANIMATION_CONFIG.rotation.wiggle,
-                        yoyo: true,
-                        repeat: 1,
-                        duration: ANIMATION_CONFIG.duration.wiggle,
-                    },
-                    0,
-                )
-                // Fade out text
-                .to(
-                    textRef.current,
-                    {
-                        opacity: 0,
-                        x: distanceX,
-                        duration: ANIMATION_CONFIG.duration.normal,
-                        filter: `blur(${ANIMATION_CONFIG.blur}px)`,
-                    },
-                    0,
-                )
-                // Drop item into cart
-                .to(itemRef.current, {
-                    y: 0,
-                    duration: ANIMATION_CONFIG.duration.fast,
-                    delay: ANIMATION_CONFIG.delay.drop,
-                })
-                // Show static border
-                .to(
-                    staticBorderRef.current,
-                    {
-                        opacity: 1,
-                        duration: ANIMATION_CONFIG.duration.fast,
-                    },
-                    "<",
-                )
-                // Hide animated border
-                .set(animatedBorderRef.current, {
-                    opacity: 0,
-                })
-                // Move cart off screen
-                .to(cartRef.current, {
-                    x: distanceX * 4,
-                    duration: ANIMATION_CONFIG.duration.slow,
-                    delay: ANIMATION_CONFIG.delay.drop,
-                })
-                .to(
-                    cartRef.current,
-                    {
-                        rotate: ANIMATION_CONFIG.rotation.move,
-                        duration: ANIMATION_CONFIG.duration.fast,
-                    },
-                    "<",
-                )
-                // Show complete border
-                .to(
-                    completeBorderRef.current,
-                    {
-                        opacity: 1,
-                        duration: ANIMATION_CONFIG.duration.normal,
-                    },
-                    "<",
-                )
-                // Show check icon
-                .to(
-                    checkRef.current,
-                    {
-                        opacity: 1,
-                        yoyo: true,
-                        scale: ANIMATION_CONFIG.scale.check,
-                        duration: ANIMATION_CONFIG.duration.check,
-                        repeatDelay: ANIMATION_CONFIG.delay.fade,
-                        repeat: 1,
-                    },
-                    "<",
-                )
-                // Reset positions
-                .set(textRef.current, {
-                    x: 0,
-                    xPercent: 0,
-                })
-                .set(cartRef.current, {
-                    x: -100,
-                    rotate: 0,
-                })
-                .set(itemRef.current, {
-                    y: -24,
-                })
-                // Fade out borders
-                .to([staticBorderRef.current, completeBorderRef.current], {
-                    opacity: 0,
-                    duration: ANIMATION_CONFIG.duration.base,
-                    delay: ANIMATION_CONFIG.delay.fade,
-                })
-                // Fade in text
-                .to(textRef.current, {
-                    xPercent: 0,
-                    opacity: 1,
-                    duration: ANIMATION_CONFIG.duration.normal,
-                    filter: "blur(0px)",
-                })
-                // Reset cart position
-                .to(cartRef.current, {
-                    x: 0,
-                })
-                // Show animated border again
-                .to(animatedBorderRef.current, {
-                    opacity: 1,
-                    duration: ANIMATION_CONFIG.duration.reset,
-                    ease: "power2.in",
-                })
-        },
-        [itemRef],
-    )
+        // Final reset
+        yield* _(
+          Effect.all(
+            [
+              animateFx(
+                animate,
+                ".atc-cart",
+                { x: 0 },
+                { duration: ANIMATION_CONFIG.duration.normal }
+              ),
+              animateFx(
+                animate,
+                ".atc-border--animated",
+                { opacity: 1 },
+                { duration: ANIMATION_CONFIG.duration.reset, ease: "easeIn" }
+              ),
+            ],
+            { concurrency: "unbounded" }
+          )
+        );
+      }),
+    [animate]
+  );
 
-    return { refs, animate, buttonState }
+  const handleAnimate = useCallback(
+    (onComplete?: () => void) => {
+      if (isRunning.current) {
+        return;
+      }
+
+      isRunning.current = true;
+      dispatch({ type: "START" });
+
+      Effect.runPromise(runAnimation(scope, animate)).then(() => {
+        isRunning.current = false;
+        dispatch({ type: "FINISH" });
+        onComplete?.();
+      });
+    },
+    [animate, scope, runAnimation]
+  );
+
+  return { scope, animate: handleAnimate, buttonState };
 }
