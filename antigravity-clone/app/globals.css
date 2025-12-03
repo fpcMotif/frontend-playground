@@ -1,0 +1,341 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Add CSS properties for ring particles animation */
+@property --animation-tick {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --ring-radius {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 150;
+}
+
+@property --ring-x {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 50;
+}
+
+@property --ring-y {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 50;
+}
+
+:root {
+  /* Default shadcn/ui styles */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Antigravity Theme Colors */
+  --surface: #ffffff;
+  --on-surface: #121317;
+  --on-surface-variant: #45474d;
+  --surface-container: #f8f9fc;
+  --surface-container-high: #eff2f7;
+  --surface-container-higher: #e6eaf0;
+  --outline-variant: rgba(33, 34, 38, 0.06);
+  --outline: rgba(33, 34, 38, 0.12);
+  --button-hover: #2f3034;
+  --button-secondary: rgba(183, 191, 217, 0.1);
+  --button-secondary-hover: #f0f1f5;
+  --nav-button-hover: rgba(183, 191, 217, 0.2);
+  --google-blue: #3186ff;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --font-sans: "Google Sans", "Geist", sans-serif;
+  --font-mono: "Geist Mono", monospace;
+
+  /* Default shadcn/ui theme mappings */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Antigravity theme mappings */
+  --color-surface: var(--surface);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-higher: var(--surface-container-higher);
+  --color-outline-variant: var(--outline-variant);
+  --color-outline: var(--outline);
+  --color-button-hover: var(--button-hover);
+  --color-button-secondary: var(--button-secondary);
+  --color-button-secondary-hover: var(--button-secondary-hover);
+  --color-nav-button-hover: var(--nav-button-hover);
+  --color-google-blue: var(--google-blue);
+
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Ring particles animation for hero section */
+@keyframes ripple {
+  0% {
+    --animation-tick: 0;
+  }
+  100% {
+    --animation-tick: 1;
+  }
+}
+
+@keyframes ring-expand {
+  0% {
+    --ring-radius: 150;
+  }
+  100% {
+    --ring-radius: 250;
+  }
+}
+
+@keyframes ring-expand-dark {
+  0% {
+    --ring-radius: 200;
+  }
+  100% {
+    --ring-radius: 300;
+  }
+}
+
+.ring-particles {
+  --ring-radius: 150;
+  --ring-thickness: 600;
+  --particle-count: 50;
+  --particle-rows: 20;
+  --particle-size: 2;
+  --particle-color: navy;
+  --particle-min-alpha: 0.1;
+  --particle-max-alpha: 1;
+  --seed: 200;
+  --ring-x: 50;
+  --ring-y: 50;
+  background-image: paint(ring-particles);
+  animation: ripple 6s linear infinite, ring-expand 6s ease-in-out infinite alternate;
+  transition: --ring-x 3s ease-out, --ring-y 3s ease-out;
+}
+
+/* Add dark variant ring particles for download section */
+.ring-particles-dark {
+  background-color: var(--on-surface);
+  background-image: paint(ring-particles);
+  animation: ripple 6s linear infinite, ring-expand-dark 6s ease-in-out infinite alternate;
+}
+
+/* Typewriter animation */
+@keyframes typewriter {
+  from {
+    background-size: 0 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+@keyframes blink {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.typewriter {
+  background: linear-gradient(90deg, currentColor 0 0) 0 / 0 no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.typewriter-animate {
+  animation: typewriter 2s ease-in forwards;
+}
+
+.typewriter::after {
+  content: "|";
+  background: linear-gradient(in oklch, oklch(80% 0.3 34), oklch(90% 0.3 200));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: blink 0.4s ease infinite alternate;
+}
+
+/* Icon wobble animation */
+@keyframes wobble {
+  from {
+    transform: translateY(75%);
+  }
+  to {
+    transform: translateY(-75%);
+  }
+}
+
+.animate-wobble {
+  animation: wobble 4s ease infinite alternate;
+}
+
+/* Slide in animation */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in-right 1s var(--ease-out-expo) forwards;
+}
+
+/* Fade up animation */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s ease forwards;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
